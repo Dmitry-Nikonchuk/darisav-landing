@@ -381,39 +381,6 @@ const reviews = [
   },
 ] as const;
 
-const legalContent = {
-  payment: {
-    title: "Оплата и безопасность",
-    paragraphs: [
-      "Демо-информация. После подключения эквайринга оплата будет проходить на защищённой платёжной странице Альфа-Банка. Данные банковской карты на этом сайте не запрашиваются и не хранятся.",
-      "Итоговая стоимость услуги или курса подтверждается до заказа. Условия онлайн-оплаты будут опубликованы после подключения эквайринга.",
-    ],
-  },
-  delivery: {
-    title: "Порядок оказания услуг",
-    paragraphs: [
-      "Демо-условия. Дата и время процедуры согласуются при записи. Студия находится в Минске; точный адрес будет опубликован после замены демонстрационных данных.",
-      "Доступ к онлайн-курсу направляется на указанную при заказе электронную почту в течение одного рабочего дня после подтверждения оплаты.",
-    ],
-  },
-  returns: {
-    title: "Возврат и отмена записи",
-    paragraphs: [
-      "Демо-условия. Если вы не можете прийти, пожалуйста, сообщите об этом не позднее чем за 24 часа — мы подберём другое время.",
-      "Порядок возврата оплаты за цифровой курс и услуги будет опубликован до начала продаж и приведён в соответствие с законодательством Республики Беларусь.",
-    ],
-  },
-  privacy: {
-    title: "Конфиденциальность",
-    paragraphs: [
-      "Форма может содержать имя, телефон и ник в Telegram. Сейчас данные никуда не отправляются и не сохраняются.",
-      "Перед запуском сайта этот раздел будет дополнен сведениями об операторе персональных данных, целях и сроках обработки, а также способом отозвать согласие.",
-    ],
-  },
-} as const;
-
-type LegalKey = keyof typeof legalContent;
-
 const phoneCountries = [
   {
     code: "BY",
@@ -970,7 +937,6 @@ function PhoneField() {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [activeLegal, setActiveLegal] = useState<LegalKey | null>(null);
   const [activeCourse, setActiveCourse] = useState<"blonde" | "base" | null>(
     null,
   );
@@ -1169,15 +1135,6 @@ export default function Home() {
       track.style.removeProperty("transition-duration"),
     );
   };
-
-  useEffect(() => {
-    if (!activeLegal) return;
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActiveLegal(null);
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [activeLegal]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1936,11 +1893,23 @@ export default function Home() {
             />
             <div>
               <label htmlFor="personal-data-consent">
-                Согласен с условиями обработки персональных данных
+                Согласен с{" "}
+                <a
+                  href="/documents/personal-data-agreement.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  условиями обработки персональных данных
+                </a>
+                {" "}и{" "}
+                <a
+                  href="/documents/privacy-policy.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Политикой конфиденциальности
+                </a>
               </label>
-              <button type="button" onClick={() => setActiveLegal("privacy")}>
-                Политика конфиденциальности
-              </button>
             </div>
           </div>
           <button className="button button-gold" type="submit">
@@ -2010,18 +1979,27 @@ export default function Home() {
             <p>ОАО «Паритетбанк» · БИК: POISBY2X</p>
           </div>
           <nav className="footer-legal" aria-label="Правовая информация">
-            <button type="button" onClick={() => setActiveLegal("delivery")}>
-              Порядок оказания услуг
-            </button>
-            <button type="button" onClick={() => setActiveLegal("returns")}>
-              Возврат и отмена
-            </button>
-            <button type="button" onClick={() => setActiveLegal("payment")}>
-              Оплата и безопасность
-            </button>
-            <button type="button" onClick={() => setActiveLegal("privacy")}>
-              Конфиденциальность
-            </button>
+            <a
+              href="/documents/personal-data-agreement.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Согласие на обработку персональных данных
+            </a>
+            <a
+              href="/documents/privacy-policy.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Политика обработки персональных данных
+            </a>
+            <a
+              href="/documents/public-contract.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Публичный договор
+            </a>
           </nav>
         </div>
         <div className="payment-strip">
@@ -2090,42 +2068,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {activeLegal && (
-        <div
-          className="dialog-backdrop"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setActiveLegal(null);
-          }}
-        >
-          <section
-            className="legal-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="legal-title"
-          >
-            <button
-              className="dialog-close"
-              type="button"
-              onClick={() => setActiveLegal(null)}
-              aria-label="Закрыть"
-            >
-              <FaTimes aria-hidden="true" />
-            </button>
-            <p className="eyebrow eyebrow-burgundy">Демо-информация</p>
-            <h2 id="legal-title">{legalContent[activeLegal].title}</h2>
-            {legalContent[activeLegal].paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-            <button
-              className="button button-burgundy"
-              type="button"
-              onClick={() => setActiveLegal(null)}
-            >
-              Понятно
-            </button>
-          </section>
-        </div>
-      )}
 
       {activeCourse && (
         <div className="course-fullscreen">
