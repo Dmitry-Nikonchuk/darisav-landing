@@ -80,15 +80,18 @@ jobs:
           SSH_USER: ${{ vars.ISPMANAGER_SSH_USER }}
           SSH_PORT: ${{ vars.ISPMANAGER_SSH_PORT }}
           APP_DIR: ${{ vars.ISPMANAGER_APP_DIR }}
+          NODE_BIN_DIR: ${{ vars.ISPMANAGER_NODE_BIN_DIR }}
           PM2_BIN: ${{ vars.ISPMANAGER_PM2_BIN }}
           PM2_APP_NAME: ${{ vars.ISPMANAGER_PM2_APP_NAME }}
         run: |
           ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" \
-            "APP_DIR='$APP_DIR' RELEASE='$GITHUB_SHA' PM2_BIN='$PM2_BIN' PM2_APP_NAME='$PM2_APP_NAME' bash -s" <<'REMOTE'
+            "APP_DIR='$APP_DIR' RELEASE='$GITHUB_SHA' NODE_BIN_DIR='$NODE_BIN_DIR' PM2_BIN='$PM2_BIN' PM2_APP_NAME='$PM2_APP_NAME' bash -s" <<'REMOTE'
           set -eu
           test -n "$APP_DIR"
+          test -x "$NODE_BIN_DIR/node"
           test -n "$PM2_BIN"
           test -n "$PM2_APP_NAME"
+          export PATH="$NODE_BIN_DIR:$PATH"
           RELEASE_DIR="$APP_DIR/releases/$RELEASE"
           mkdir -p "$RELEASE_DIR"
           tar -xzf "$HOME/site-$RELEASE.tar.gz" -C "$RELEASE_DIR"
