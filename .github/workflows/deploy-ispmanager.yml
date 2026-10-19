@@ -84,7 +84,7 @@ jobs:
           PM2_APP_NAME: ${{ vars.ISPMANAGER_PM2_APP_NAME }}
         run: |
           ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" \
-            "APP_DIR='$APP_DIR' RELEASE='$GITHUB_SHA' PM2_APP_NAME='$PM2_APP_NAME' bash -s" <<'REMOTE'
+            "APP_DIR='$APP_DIR' RELEASE='$GITHUB_SHA' PM2_BIN='$PM2_BIN' PM2_APP_NAME='$PM2_APP_NAME' bash -s" <<'REMOTE'
           set -eu
           test -n "$APP_DIR"
           test -n "$PM2_BIN"
