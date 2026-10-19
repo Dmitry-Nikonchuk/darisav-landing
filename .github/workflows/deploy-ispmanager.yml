@@ -1,0 +1,105 @@
+name: Build and deploy to ISPmanager
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build standalone application
+        run: npm run build
+        env:
+          BUILD_STANDALONE: "true"
+
+      - name: Prepare deployment bundle
+        run: |
+          cp -a public .next/standalone/public
+          mkdir -p .next/standalone/.next
+          cp -a .next/static .next/standalone/.next/static
+          tar -czf site.tar.gz -C .next/standalone .
+
+      - name: Upload deployment bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ispmanager-site
+          path: site.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.ISPMANAGER_DEPLOY_ENABLED == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download deployment bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: ispmanager-site
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ISPMANAGER_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.ISPMANAGER_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload bundle
+        env:
+          SSH_HOST: ${{ vars.ISPMANAGER_SSH_HOST }}
+          SSH_USER: ${{ vars.ISPMANAGER_SSH_USER }}
+          SSH_PORT: ${{ vars.ISPMANAGER_SSH_PORT }}
+        run: scp -P "${SSH_PORT:-22}" site.tar.gz "$SSH_USER@$SSH_HOST:site-${GITHUB_SHA}.tar.gz"
+
+      - name: Install release and restart application
+        env:
+          SSH_HOST: ${{ vars.ISPMANAGER_SSH_HOST }}
+          SSH_USER: ${{ vars.ISPMANAGER_SSH_USER }}
+          SSH_PORT: ${{ vars.ISPMANAGER_SSH_PORT }}
+          APP_DIR: ${{ vars.ISPMANAGER_APP_DIR }}
+          PM2_APP_NAME: ${{ vars.ISPMANAGER_PM2_APP_NAME }}
+        run: |
+          ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" \
+            "APP_DIR='$APP_DIR' RELEASE='$GITHUB_SHA' PM2_APP_NAME='$PM2_APP_NAME' bash -s" <<'REMOTE'
+          set -eu
+          test -n "$APP_DIR"
+          test -n "$PM2_APP_NAME"
+          RELEASE_DIR="$APP_DIR/releases/$RELEASE"
+          mkdir -p "$RELEASE_DIR"
+          tar -xzf "$HOME/site-$RELEASE.tar.gz" -C "$RELEASE_DIR"
+          rm -f "$HOME/site-$RELEASE.tar.gz"
+          PREVIOUS_TARGET="$(readlink "$APP_DIR/current" || true)"
+          ln -s "$RELEASE_DIR" "$APP_DIR/current-next"
+          mv -Tf "$APP_DIR/current-next" "$APP_DIR/current"
+          if ! /usr/lib/ispnodejs/bin/pm2 restart "$PM2_APP_NAME"; then
+            if [ -n "$PREVIOUS_TARGET" ]; then
+              ln -s "$PREVIOUS_TARGET" "$APP_DIR/current-rollback"
+              mv -Tf "$APP_DIR/current-rollback" "$APP_DIR/current"
+              /usr/lib/ispnodejs/bin/pm2 restart "$PM2_APP_NAME" || true
+            fi
+            exit 1
+          fi
+          REMOTE
