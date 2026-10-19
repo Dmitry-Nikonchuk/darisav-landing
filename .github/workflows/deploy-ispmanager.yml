@@ -80,12 +80,14 @@ jobs:
           SSH_USER: ${{ vars.ISPMANAGER_SSH_USER }}
           SSH_PORT: ${{ vars.ISPMANAGER_SSH_PORT }}
           APP_DIR: ${{ vars.ISPMANAGER_APP_DIR }}
+          PM2_BIN: ${{ vars.ISPMANAGER_PM2_BIN }}
           PM2_APP_NAME: ${{ vars.ISPMANAGER_PM2_APP_NAME }}
         run: |
           ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" \
             "APP_DIR='$APP_DIR' RELEASE='$GITHUB_SHA' PM2_APP_NAME='$PM2_APP_NAME' bash -s" <<'REMOTE'
           set -eu
           test -n "$APP_DIR"
+          test -n "$PM2_BIN"
           test -n "$PM2_APP_NAME"
           RELEASE_DIR="$APP_DIR/releases/$RELEASE"
           mkdir -p "$RELEASE_DIR"
@@ -94,11 +96,11 @@ jobs:
           PREVIOUS_TARGET="$(readlink "$APP_DIR/current" || true)"
           ln -s "$RELEASE_DIR" "$APP_DIR/current-next"
           mv -Tf "$APP_DIR/current-next" "$APP_DIR/current"
-          if ! /usr/lib/ispnodejs/bin/pm2 restart "$PM2_APP_NAME"; then
+          if ! "$PM2_BIN" restart "$PM2_APP_NAME"; then
             if [ -n "$PREVIOUS_TARGET" ]; then
               ln -s "$PREVIOUS_TARGET" "$APP_DIR/current-rollback"
               mv -Tf "$APP_DIR/current-rollback" "$APP_DIR/current"
-              /usr/lib/ispnodejs/bin/pm2 restart "$PM2_APP_NAME" || true
+              "$PM2_BIN" restart "$PM2_APP_NAME" || true
             fi
             exit 1
           fi
