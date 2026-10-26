@@ -17,6 +17,7 @@ type TelegramResponse<T> = {
   ok: boolean;
   result?: T;
   error_code?: number;
+  description?: string;
 };
 
 function getBotToken() {
@@ -81,7 +82,12 @@ async function telegramApi<T>(method: string, payload: Record<string, unknown>) 
   });
   const result = (await response.json()) as TelegramResponse<T>;
   if (!response.ok || !result.ok) {
-    throw new Error(`Telegram ${method} failed (${result.error_code ?? response.status})`);
+    const description = result.description?.slice(0, 200);
+    throw new Error(
+      `Telegram ${method} failed (${result.error_code ?? response.status})${
+        description ? `: ${description}` : ""
+      }`,
+    );
   }
   return result.result as T;
 }
