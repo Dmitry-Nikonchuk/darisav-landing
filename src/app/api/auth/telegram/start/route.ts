@@ -16,9 +16,17 @@ export async function GET(request: Request) {
     const response = Response.redirect(createTelegramAuthorizationUrl(state));
     setSignedCookie(response, TELEGRAM_OAUTH_COOKIE, state, 600);
     return response;
-  } catch {
-    return Response.redirect(
-      new URL("/checkout/blonde-formula?telegram=unavailable", request.url),
-    );
+  } catch (error) {
+    // Keep diagnostics useful without ever logging OAuth credentials or cookies.
+    console.error("[telegram-auth] Unable to start OAuth", {
+      reason: error instanceof Error ? error.message : "Unknown error",
+    });
+
+    // A relative Location keeps the browser on the public host behind proxies;
+    // request.url can contain an internal address such as 0.0.0.0:10002.
+    return new Response(null, {
+      status: 303,
+      headers: { Location: "/checkout/blonde-formula?telegram=unavailable" },
+    });
   }
 }
