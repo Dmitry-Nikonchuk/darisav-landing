@@ -11,9 +11,11 @@ export const TELEGRAM_OAUTH_COOKIE = "bf_telegram_oauth";
 export const TELEGRAM_SESSION_SECONDS = 60 * 60 * 24 * 7;
 
 export type TelegramSession = {
-  sub: string;
+  telegramUserId: string;
   exp: number;
 };
+
+export type TelegramIdentity = { telegramUserId: string };
 
 export type TelegramOAuthState = {
   state: string;
@@ -67,7 +69,11 @@ export function getTelegramSession(request: Request) {
   const token = readCookie(request, TELEGRAM_SESSION_COOKIE);
   if (!token) return null;
   const session = verifyPayload<TelegramSession>(token, getSessionSecret());
-  if (!session || !/^\d+$/.test(session.sub) || session.exp <= Date.now() / 1000) {
+  if (
+    !session ||
+    !/^\d+$/.test(session.telegramUserId) ||
+    session.exp <= Date.now() / 1000
+  ) {
     return null;
   }
   return session;
@@ -110,6 +116,7 @@ type TelegramIdClaims = {
   iss?: string;
   aud?: string | string[];
   sub?: string;
+  id?: number | string;
   exp?: number;
   iat?: number;
   nonce?: string;
@@ -133,7 +140,7 @@ async function validateTelegramIdToken(
   token: string,
   expectedNonce: string,
   clientId: string,
-) {
+): Promise<TelegramIdentity> {
   const parts = token.split(".");
   if (parts.length !== 3) throw new Error("Malformed Telegram ID token");
   const [encodedHeader, encodedClaims, encodedSignature] = parts;
@@ -163,12 +170,22 @@ async function validateTelegramIdToken(
 
   const now = Math.floor(Date.now() / 1000);
   const audiences = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+  const rawTelegramUserId =
+    typeof claims.id === "number" && Number.isSafeInteger(claims.id) && claims.id > 0
+      ? String(claims.id)
+      : typeof claims.id === "string" && /^\d{1,19}$/.test(claims.id)
+        ? claims.id
+        : null;
+  const telegramUserId = rawTelegramUserId &&
+    BigInt(rawTelegramUserId) <= BigInt("9223372036854775807")
+    ? rawTelegramUserId
+    : null;
   if (
     !validSignature ||
     claims.iss !== "https://oauth.telegram.org" ||
     !audiences.includes(clientId) ||
     !claims.sub ||
-    !/^\d+$/.test(claims.sub) ||
+    !telegramUserId ||
     !claims.exp ||
     claims.exp <= now ||
     !claims.iat ||
@@ -180,7 +197,7 @@ async function validateTelegramIdToken(
     throw new Error("Telegram ID token validation failed");
   }
 
-  return claims.sub;
+  return { telegramUserId };
 }
 
 export function readOAuthState(request: Request) {

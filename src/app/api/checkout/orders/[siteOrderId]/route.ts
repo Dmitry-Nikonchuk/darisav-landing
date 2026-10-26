@@ -22,7 +22,7 @@ export async function GET(request: Request, context: RouteContext) {
   let order = await prisma.order.findFirst({
     where: {
       siteOrderId,
-      telegramUserId: BigInt(session.sub),
+      telegramUserId: BigInt(session.telegramUserId),
     },
     include: { accessGrant: true },
   });

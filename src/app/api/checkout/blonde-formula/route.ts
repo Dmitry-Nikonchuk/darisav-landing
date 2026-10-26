@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   try {
     const configuration = getWebPayConfiguration();
     const prisma = getPrisma();
-    const telegramUserId = BigInt(session.sub);
+    const telegramUserId = BigInt(session.telegramUserId);
     const now = new Date();
     const order = await prisma.order.create({
       data: {

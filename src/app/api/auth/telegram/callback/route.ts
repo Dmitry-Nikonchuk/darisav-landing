@@ -52,8 +52,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    const telegramUserId = await exchangeTelegramCode(code, oauthState);
-    const userId = BigInt(telegramUserId);
+    const identity = await exchangeTelegramCode(code, oauthState);
+    const userId = BigInt(identity.telegramUserId);
     await getPrisma().telegramUser.upsert({
       where: { id: userId },
       create: { id: userId },
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
     });
 
     const session: TelegramSession = {
-      sub: telegramUserId,
+      telegramUserId: identity.telegramUserId,
       exp: Math.floor(Date.now() / 1000) + TELEGRAM_SESSION_SECONDS,
     };
     const response = finishLogin(oauthState.popup, true);
