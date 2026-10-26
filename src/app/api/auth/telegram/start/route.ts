@@ -13,7 +13,13 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const popup = url.searchParams.get("popup") === "1";
     const state = createOAuthState(popup);
-    const response = Response.redirect(createTelegramAuthorizationUrl(state));
+    const authorizationUrl = createTelegramAuthorizationUrl(state);
+    // Response.redirect() returns immutable headers in the Next.js runtime,
+    // but the OAuth state cookie must be appended before returning the redirect.
+    const response = new Response(null, {
+      status: 302,
+      headers: { Location: authorizationUrl.toString() },
+    });
     setSignedCookie(response, TELEGRAM_OAUTH_COOKIE, state, 600);
     return response;
   } catch (error) {
