@@ -179,11 +179,24 @@ export async function ensureCourseInvite(orderId: string) {
 
   try {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const created = await telegramApi<{ invite_link: string }>("createChatInviteLink", {
+    const requestedExpireDate = Math.floor(expiresAt.getTime() / 1000);
+    const created = await telegramApi<{
+      invite_link: string;
+      date?: number;
+      expire_date?: number;
+      is_revoked?: boolean;
+    }>("createChatInviteLink", {
       chat_id: getChannelId(),
       name: order.siteOrderId.slice(-32),
-      expire_date: Math.floor(expiresAt.getTime() / 1000),
+      expire_date: requestedExpireDate,
       creates_join_request: true,
+    });
+    console.info("[course-access] Telegram invite created", {
+      orderId: order.siteOrderId,
+      telegramCreatedAt: created.date ?? null,
+      requestedExpireAt: requestedExpireDate,
+      telegramExpireAt: created.expire_date ?? null,
+      telegramIsRevoked: created.is_revoked ?? null,
     });
     const encrypted = encryptInviteLink(created.invite_link);
     await prisma.$transaction([
