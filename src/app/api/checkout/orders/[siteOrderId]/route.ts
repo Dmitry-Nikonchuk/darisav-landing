@@ -77,7 +77,11 @@ export async function GET(request: Request, context: RouteContext) {
   if (accessStatuses.includes(order.status)) {
     try {
       inviteUrl = await ensureCourseInvite(order.id);
-    } catch {
+    } catch (error) {
+      console.error("[course-access] Unable to prepare course invite", {
+        orderId: order.siteOrderId,
+        reason: error instanceof Error ? error.message : "Unknown error",
+      });
       inviteUrl = null;
     }
   }

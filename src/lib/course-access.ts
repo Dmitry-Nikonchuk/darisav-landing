@@ -122,7 +122,7 @@ export async function ensureCourseInvite(orderId: string) {
   const grant = await prisma.accessGrant.upsert({
     where: { orderId: order.id },
     create: { orderId: order.id, telegramUserId: order.telegramUserId },
-    update: {},
+    update: { telegramUserId: order.telegramUserId },
   });
   if (
     grant.status === AccessGrantStatus.invite_created &&
