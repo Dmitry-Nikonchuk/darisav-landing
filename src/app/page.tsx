@@ -1474,12 +1474,12 @@ export default function Home() {
                 <span>Доступ навсегда</span>
               </div>
               <div className="course-card-footer">
-                <button
+                <a
                   className="course-card-price course-card-buy"
-                  type="button"
+                  href="/checkout/blonde-formula"
                 >
-                  Забронировать место · 90 BYN / 2490 RUB
-                </button>
+                  Забронировать место · 50 BYN
+                </a>
                 <button
                   className="course-card-open"
                   type="button"
@@ -2500,12 +2500,12 @@ export default function Home() {
               {activeCourse === "blonde" && (
                 <a
                   className="button button-burgundy course-detail-book"
-                  href="#contacts"
+                  href="/checkout/blonde-formula"
                   onClick={() => {
                     setActiveCourse(null);
                   }}
                 >
-                  Забронировать место · 90 BYN / 2490 RUB{" "}
+                  Забронировать место · 50 BYN{" "}
                   <FaArrowRight aria-hidden="true" />
                 </a>
               )}

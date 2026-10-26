@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum OrderStatus {
+  pending_payment
+  paid
+  access_pending
+  access_granted
+  payment_failed
+  expired
+  refunded
+  chargeback
+}
+
+enum AccessGrantStatus {
+  pending
+  invite_created
+  join_requested
+  access_granted
+  revoked
+  rejected
+  failed
+}
+
+model TelegramUser {
+  id           BigInt        @id
+  createdAt    DateTime      @default(now()) @db.DateTime(3)
+  updatedAt    DateTime      @updatedAt @db.DateTime(3)
+  orders       Order[]
+  accessGrants AccessGrant[]
+}
+
+model Order {
+  id                     String            @id @default(uuid()) @db.Char(36)
+  siteOrderId            String            @unique @db.VarChar(64)
+  productCode            String            @db.VarChar(64)
+  amount                 Decimal           @db.Decimal(10, 2)
+  currency               String            @db.Char(3)
+  status                 OrderStatus       @default(pending_payment)
+  telegramUserId         BigInt
+  webpayOrderId          String?           @db.VarChar(64)
+  webpayInvoiceNumber    String?           @db.VarChar(64)
+  webpayTransactionId    String?           @unique @db.VarChar(64)
+  createdAt              DateTime          @default(now()) @db.DateTime(3)
+  updatedAt              DateTime          @updatedAt @db.DateTime(3)
+  expiresAt              DateTime          @db.DateTime(3)
+  paidAt                 DateTime?         @db.DateTime(3)
+  refundedAt             DateTime?         @db.DateTime(3)
+  chargebackAt           DateTime?         @db.DateTime(3)
+  lastPaymentCheckAt     DateTime?         @db.DateTime(3)
+  telegramUser           TelegramUser      @relation(fields: [telegramUserId], references: [id], onDelete: Restrict)
+  paymentEvents          PaymentEvent[]
+  accessGrant            AccessGrant?
+
+  @@index([telegramUserId, status])
+  @@index([status, expiresAt])
+}
+
+model PaymentEvent {
+  id                String    @id @default(uuid()) @db.Char(36)
+  eventType         String    @default("webpay_notification") @db.VarChar(32)
+  transactionId     String?   @unique @db.VarChar(64)
+  siteOrderId       String    @db.VarChar(64)
+  webpayOrderId     String?   @db.VarChar(64)
+  orderId           String?   @db.Char(36)
+  amount            Decimal?  @db.Decimal(10, 2)
+  currency          String?   @db.Char(3)
+  paymentMethod     String?   @db.VarChar(64)
+  paymentType       String?   @db.VarChar(16)
+  signatureValid    Boolean   @default(false)
+  accepted          Boolean   @default(false)
+  rejectionReason   String?   @db.VarChar(191)
+  processedAt       DateTime  @default(now()) @db.DateTime(3)
+  order             Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([siteOrderId, processedAt])
+}
+
+model AccessGrant {
+  id                    String            @id @default(uuid()) @db.Char(36)
+  orderId               String            @unique @db.Char(36)
+  telegramUserId        BigInt
+  status                AccessGrantStatus @default(pending)
+  inviteLinkHash        String?           @unique @db.Char(64)
+  inviteLinkCiphertext  String?           @db.Text
+  inviteLinkIv          String?           @db.VarChar(32)
+  inviteLinkAuthTag     String?           @db.VarChar(32)
+  inviteExpiresAt       DateTime?         @db.DateTime(3)
+  claimLeaseUntil       DateTime?         @db.DateTime(3)
+  joinRequestedAt       DateTime?         @db.DateTime(3)
+  grantedAt             DateTime?         @db.DateTime(3)
+  revokedAt             DateTime?         @db.DateTime(3)
+  createdAt             DateTime          @default(now()) @db.DateTime(3)
+  updatedAt             DateTime          @updatedAt @db.DateTime(3)
+  order                 Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  telegramUser          TelegramUser      @relation(fields: [telegramUserId], references: [id], onDelete: Restrict)
+
+  @@index([telegramUserId, status, inviteExpiresAt])
+}
+
+model TelegramUpdate {
+  updateId     BigInt    @id
+  status       String    @db.VarChar(24)
+  attempts     Int       @default(0)
+  processedAt  DateTime? @db.DateTime(3)
+  createdAt    DateTime  @default(now()) @db.DateTime(3)
+  updatedAt    DateTime  @updatedAt @db.DateTime(3)
+}
