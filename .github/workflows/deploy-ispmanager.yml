@@ -36,6 +36,13 @@ jobs:
           cp -a public .next/standalone/public
           mkdir -p .next/standalone/.next
           cp -a .next/static .next/standalone/.next/static
+          cp -a prisma .next/standalone/prisma
+          cp prisma.config.ts .next/standalone/prisma.config.ts
+          cp -a scripts .next/standalone/scripts
+          mkdir -p .next/standalone/node_modules/@prisma
+          cp -a node_modules/prisma .next/standalone/node_modules/prisma
+          cp -a node_modules/@prisma/. .next/standalone/node_modules/@prisma/
+          cp -a node_modules/dotenv .next/standalone/node_modules/dotenv
           tar -czf site.tar.gz -C .next/standalone .
 
       - name: Upload deployment bundle
@@ -96,10 +103,22 @@ jobs:
           mkdir -p "$RELEASE_DIR"
           tar -xzf "$HOME/site-$RELEASE.tar.gz" -C "$RELEASE_DIR"
           rm -f "$HOME/site-$RELEASE.tar.gz"
+          if [ -f "$APP_DIR/.env" ]; then
+            ln -s "$APP_DIR/.env" "$RELEASE_DIR/.env"
+          fi
+          "$NODE_BIN_DIR/node" "$RELEASE_DIR/scripts/run-server-migrations.mjs" "$PM2_BIN" "$PM2_APP_NAME" "$RELEASE_DIR"
           PREVIOUS_TARGET="$(readlink "$APP_DIR/current" || true)"
           ln -s "$RELEASE_DIR" "$APP_DIR/current-next"
           mv -Tf "$APP_DIR/current-next" "$APP_DIR/current"
           if ! "$PM2_BIN" restart "$PM2_APP_NAME"; then
+            if [ -n "$PREVIOUS_TARGET" ]; then
+              ln -s "$PREVIOUS_TARGET" "$APP_DIR/current-rollback"
+              mv -Tf "$APP_DIR/current-rollback" "$APP_DIR/current"
+              "$PM2_BIN" restart "$PM2_APP_NAME" || true
+            fi
+            exit 1
+          fi
+          if ! "$NODE_BIN_DIR/node" "$APP_DIR/current/scripts/run-server-telegram-webhook.mjs" "$PM2_BIN" "$PM2_APP_NAME" "$APP_DIR/current"; then
             if [ -n "$PREVIOUS_TARGET" ]; then
               ln -s "$PREVIOUS_TARGET" "$APP_DIR/current-rollback"
               mv -Tf "$APP_DIR/current-rollback" "$APP_DIR/current"
