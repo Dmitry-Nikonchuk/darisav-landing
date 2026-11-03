@@ -26,7 +26,14 @@ function finishLogin(popup: boolean, success: boolean, diagnosticId?: string) {
     if (diagnosticId) target.searchParams.set("diag", diagnosticId);
   }
 
-  if (!popup) return Response.redirect(target);
+  if (!popup) {
+    // Response.redirect() returns immutable headers in the Next.js runtime;
+    // the OAuth/session cookies must be appended to this redirect response.
+    return new Response(null, {
+      status: 302,
+      headers: { Location: target.toString() },
+    });
+  }
 
   const targetOrigin = JSON.stringify(baseUrl.origin);
   const targetUrl = JSON.stringify(target.toString());
