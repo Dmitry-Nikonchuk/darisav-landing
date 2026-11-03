@@ -408,7 +408,7 @@ body.portfolio-lightbox-open { overflow: hidden; }
 .contact-hours { display: flex; align-items: center; gap: 10px; margin: 20px 0 0; color: rgba(249,246,240,.56); font-size: 12px; letter-spacing: .08em; }
 .contact-hours > span { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
 .contact-form { display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: 16px; }
-.contact-form-intro, .contact-form .contact-consent, .contact-form .button, .contact-form .form-success { grid-column: 1 / -1; }
+.contact-form-intro, .contact-form .contact-consent, .contact-form .button, .contact-form .form-success, .contact-form .form-error { grid-column: 1 / -1; }
 .contact-form-intro { margin: 0 0 4px; color: var(--cashmere); font-family: var(--font-display); font-size: clamp(26px, 3vw, 36px); font-weight: 400; line-height: 1.1; }
 .contact-form label { display: grid; gap: 8px; color: rgba(249,246,240,.77); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
 .contact-form input, .contact-form textarea, .interest-select-trigger { width: 100%; min-height: 48px; padding: 12px 14px; color: var(--cashmere); border: 1px solid rgba(249,246,240,.23); border-radius: 2px; outline: none; background: rgba(249,246,240,.045); font-family: var(--font-body); font-size: 14px; letter-spacing: normal; text-align: left; text-transform: none; transition: border-color .2s ease, background .2s ease; }
@@ -442,6 +442,7 @@ body.portfolio-lightbox-open { overflow: hidden; }
 .contact-consent a { padding: 0; color: var(--gold); font-family: var(--font-body); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
 .contact-form .button { justify-self: start; margin-top: 8px; }
 .form-success { margin: 0; color: #dfb27f; font-size: 12px; line-height: 1.5; }
+.form-error { margin: 0; color: #ffb4a8; font-size: 13px; line-height: 1.5; }
 .eyebrow-gold,
 .course-subtitle,
 .text-link-gold,
@@ -451,7 +452,7 @@ body.portfolio-lightbox-open { overflow: hidden; }
 .phone-country-option.is-selected,
 .interest-select-option.is-selected,
 .contact-consent a,
-.form-success { text-shadow: 0 1px 2px rgba(15, 3, 8, .82); }
+.form-success, .form-error { text-shadow: 0 1px 2px rgba(15, 3, 8, .82); }
 
 .site-footer { padding: 61px clamp(30px, 7vw, 108px) 18px; background: #f2ede6; }
 .footer-main { display: grid; grid-template-columns: .85fr 1fr 1.45fr auto; gap: clamp(28px, 3vw, 48px); padding-bottom: 48px; }

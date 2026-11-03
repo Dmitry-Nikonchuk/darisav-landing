@@ -1000,6 +1000,8 @@ export default function Home() {
     );
   };
   const [formSent, setFormSent] = useState(false);
+  const [formSending, setFormSending] = useState(false);
+  const [formError, setFormError] = useState("");
   const [phoneFieldKey, setPhoneFieldKey] = useState(0);
   const [activePortfolioIndex, setActivePortfolioIndex] = useState<
     number | null
@@ -1232,11 +1234,44 @@ export default function Home() {
     return () => window.removeEventListener("resize", updatePortfolioBounds);
   }, []);
 
-  function submitDemoForm(event: FormEvent<HTMLFormElement>) {
+  async function submitDemoForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setFormSent(true);
-    event.currentTarget.reset();
-    setPhoneFieldKey((key) => key + 1);
+    if (formSending) return;
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    setFormSending(true);
+    setFormError("");
+    setFormSent(false);
+
+    try {
+      const response = await fetch("/api/contact/consultation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          phone: formData.get("phone"),
+          telegram: formData.get("telegram"),
+          consent: formData.get("consent"),
+        }),
+      });
+      const result = (await response.json()) as { error?: string; sent?: boolean };
+      if (!response.ok || !result.sent) {
+        throw new Error(result.error ?? "Не удалось отправить заявку.");
+      }
+
+      setFormSent(true);
+      form.reset();
+      setPhoneFieldKey((key) => key + 1);
+    } catch (error) {
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : "Не удалось отправить заявку. Попробуйте ещё раз.",
+      );
+    } finally {
+      setFormSending(false);
+    }
   }
 
   return (
@@ -1912,14 +1947,16 @@ export default function Home() {
               </label>
             </div>
           </div>
-          <button className="button button-gold" type="submit">
-            Отправить <FaArrowRight aria-hidden="true" />
+          <button className="button button-gold" type="submit" disabled={formSending}>
+            {formSending ? "Отправляем…" : "Отправить"}
+            {!formSending && <FaArrowRight aria-hidden="true" />}
           </button>
           {formSent && (
             <p className="form-success" role="status">
-              Спасибо! Форма заполнена.
+              Спасибо! Заявка отправлена. Мы свяжемся с вами.
             </p>
           )}
+          {formError && <p className="form-error" role="alert">{formError}</p>}
         </form>
       </section>
 
