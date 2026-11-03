@@ -473,11 +473,19 @@ body.portfolio-lightbox-open { overflow: hidden; }
 .footer-legal { display: grid; align-content: start; justify-items: start; gap: 11px; }
 .footer-legal a { padding: 0; color: var(--burgundy); border: 0; background: transparent; font-size: 14px; line-height: 1.4; text-align: left; text-decoration: none; }
 .footer-legal a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.payment-strip { display: grid; grid-template-columns: minmax(180px, .42fr) minmax(0, 1fr); align-items: center; gap: 35px; min-width: 0; padding: 22px 0; border-top: 1px solid #ddd3c9; border-bottom: 1px solid #ddd3c9; }
-.payment-copy { display: grid; gap: 6px; flex: 0 0 auto; color: var(--burgundy); font-family: var(--font-display); font-size: 17px; }
-.payment-copy small { color: #95877e; font-family: var(--font-body); font-size: 12px; letter-spacing: .05em; }
-.payment-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 20px; width: 100%; max-width: 800px; min-width: 0; }
-.payment-logo { display: block; flex: 0 1 auto; width: auto; max-width: 100%; height: 44px; object-fit: contain; mix-blend-mode: multiply; }
+.payment-strip { display: grid; gap: 20px; min-width: 0; padding: 25px 0 28px; border-top: 1px solid #ddd3c9; border-bottom: 1px solid #ddd3c9; }
+.payment-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 13px; }
+.payment-heading h2 { margin: 0; color: var(--burgundy); font-family: var(--font-display); font-size: 22px; font-weight: 400; }
+.payment-heading p { margin: 0 0 0 auto; color: #95877e; font-size: 13px; }
+.payment-logos { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px; width: 100%; min-width: 0; }
+.payment-logo-cell { display: grid; min-width: 0; min-height: 42px; place-items: center; padding: 4px; }
+.payment-logo { display: block; width: 100%; max-width: 108px; height: 30px; object-fit: contain; mix-blend-mode: multiply; }
+.payment-disclosure { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 22px 0 14px; color: #716460; }
+.payment-disclosure-intro { max-width: 100%; }
+.payment-disclosure h2 { margin: 0 0 4px; color: var(--burgundy); font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1.2; }
+.payment-disclosure p { margin: 0 0 5px; font-size: 12px; line-height: 1.45; }
+.payment-disclosure-details { columns: 1; }
+.payment-disclosure a { color: var(--burgundy); text-decoration: underline; text-underline-offset: 2px; }
 .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 18px; color: #95877e; font-size: 12px; letter-spacing: .04em; }
 .footer-bottom a { display: flex; align-items: center; gap: 8px; color: var(--burgundy); }
 .footer-bottom a svg { transform: rotate(-45deg); }
@@ -810,9 +818,12 @@ body:has(.course-fullscreen) { overflow: hidden; }
   .site-footer { padding: 48px 25px 18px; }
   .footer-main { grid-template-columns: 1fr; gap: 32px; padding-bottom: 34px; }
   .footer-legal { grid-column: auto; grid-template-columns: 1fr 1fr; gap: 14px 19px; }
-  .payment-strip { display: grid; gap: 15px; }
-  .payment-copy { font-size: 16px; }
-  .payment-logos { justify-content: flex-start; }
+  .payment-strip { gap: 15px; }
+  .payment-heading p { flex-basis: 100%; margin-left: 0; }
+  .payment-logos { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .payment-logo-cell { min-height: 40px; padding: 3px; }
+  .payment-logo { height: 28px; }
+  .payment-disclosure { gap: 14px; }
   .footer-bottom { font-size: 12px; letter-spacing: .02em; }
 }
 
@@ -883,18 +894,7 @@ body:has(.course-fullscreen) { overflow: hidden; }
 
 
 @media (max-width: 460px) {
-  .payment-strip {
-    position: relative;
-    left: 50%;
-    width: 100vw;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    padding-inline: 0;
-    transform: translateX(-50%);
-  }
-  .payment-copy { display: none; }
-  .payment-logos { width: 100%; max-width: none; justify-content: center; gap: 12px 18px; }
-  .payment-logo { height: 38px; }
+  .payment-logos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 }
 
 .checkout-page { display: grid; align-content: center; justify-items: center; min-height: 100svh; padding: 36px 20px; color: var(--burgundy); background: var(--cashmere); }
@@ -912,6 +912,21 @@ body:has(.course-fullscreen) { overflow: hidden; }
 .checkout-result { max-width: 720px; }
 .checkout-refresh { margin-top: 12px; padding: 8px 0; color: var(--burgundy); border: 0; background: transparent; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .checkout-retry-link { display: inline-block; margin: 14px 0 0 18px; color: var(--burgundy); font-size: 13px; }
+
+@media (min-width: 1600px) {
+  .site-header,
+  .about,
+  .course,
+  .course-catalog,
+  .services,
+  .portfolio,
+  .course-callout,
+  .reviews,
+  .contact,
+  .site-footer {
+    padding-inline: max(24px, calc((100vw - 1600px) / 2));
+  }
+}
 
 @media (max-width: 520px) {
   .checkout-page { align-content: start; padding: 28px 16px; }

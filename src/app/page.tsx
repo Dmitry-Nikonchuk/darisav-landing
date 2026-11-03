@@ -2040,8 +2040,9 @@ export default function Home() {
           </nav>
         </div>
         <div className="payment-strip">
-          <div className="payment-copy">
-            <span>Способы оплаты</span>
+          <div className="payment-heading">
+            <h2>Способы оплаты</h2>
+            <p>Банковские карты и платёжные сервисы</p>
           </div>
           <div
             className="payment-logos"
@@ -2049,31 +2050,45 @@ export default function Home() {
             aria-label="Доступные способы оплаты"
           >
             {[
-              { src: "/images/payment/visa.png", alt: "Visa", width: 240 },
               {
-                src: "/images/payment/visa-secure.png",
+                src: "/images/payment/visa-color.svg",
+                alt: "Visa",
+                width: 240,
+              },
+              {
+                src: "/images/payment/visa-secure-color.svg",
                 alt: "Visa Secure",
                 width: 180,
               },
               {
-                src: "/images/payment/mastercard-id-check.png",
+                src: "/images/payment/mastercard-id-check-color.svg",
                 alt: "Mastercard ID Check",
                 width: 335,
               },
               {
-                src: "/images/payment/mastercard.png",
+                src: "/images/payment/mastercard-color.svg",
                 alt: "Mastercard",
                 width: 160,
               },
               {
-                src: "/images/payment/belkart-internet.png",
+                src: "/images/payment/belkart-internet-color.svg",
                 alt: "Белкарт ИнтернетПароль",
                 width: 370,
               },
               {
-                src: "/images/payment/belkart.png",
+                src: "/images/payment/belkart-color.svg",
                 alt: "Белкарт",
                 width: 185,
+              },
+              {
+                src: "/images/payment/webpay-color.svg",
+                alt: "WEBPAY",
+                width: 180,
+              },
+              {
+                src: "/images/payment/erip-color.svg",
+                alt: "ЕРИП",
+                width: 140,
               },
               {
                 src: "/images/payment/apple-pay.png",
@@ -2086,17 +2101,55 @@ export default function Home() {
                 width: 400,
               },
             ].map((logo) => (
-              <Image
-                key={logo.src}
-                src={logo.src}
-                alt={logo.alt}
-                width={logo.width}
-                height={200}
-                className="payment-logo"
-              />
+              <div className="payment-logo-cell" key={logo.src}>
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={logo.width}
+                  height={200}
+                  className="payment-logo"
+                />
+              </div>
             ))}
           </div>
         </div>
+        <section className="payment-disclosure" aria-labelledby="payment-disclosure-title">
+          <div className="payment-disclosure-intro">
+            <h2 id="payment-disclosure-title">Оплата через WEBPAY</h2>
+            <p>
+              Оплата товаров и услуг банковской платёжной картой производится через
+              систему WEBPAY. Подробнее о системе —{" "}
+              <a href="https://www.webpay.by" target="_blank" rel="noopener noreferrer">
+                на сайте webpay.by
+              </a>.
+            </p>
+          </div>
+          <div className="payment-disclosure-details">
+            <p>
+              Безопасный сервер WEBPAY устанавливает шифрованное соединение по
+              защищенному протоколу TLS и конфиденциально принимает от клиента данные
+              его платёжной карты (номер карты, имя держателя, дату окончания действия,
+              и контрольный номер банковской карточке CVC/CVC2).
+            </p>
+            <p>
+              После совершения оплаты с использованием банковской карты необходимо
+              сохранять полученные карт-чеки (подтверждения об оплате) для сверки с
+              выпиской из карт-счёта (с целью подтверждения совершённых операций в
+              случае возникновения спорных ситуаций).
+            </p>
+            <p>
+              В случае, если Вы не получили заказ (не оказана услуга), Вам необходимо
+              обратиться в службу технической поддержки по телефону{" "}
+              <a href="tel:+375297887992">+375 (29) 788-79-92</a> или e-mail{" "}
+              <a href="mailto:daruwell2007@gmail.com">daruwell2007@gmail.com</a>.
+              Менеджеры Вас проконсультируют.
+            </p>
+            <p>
+              При оплате банковской платежной картой возврат денежных средств
+              осуществляется на карточку, с которой была произведена оплата.
+            </p>
+          </div>
+        </section>
         <div className="footer-bottom">
           <span>© 2026 Daria Savich. Все права защищены.</span>
           <a href="#home">
