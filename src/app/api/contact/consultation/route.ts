@@ -88,9 +88,14 @@ export async function POST(request: Request) {
     console.info("[consultation] Telegram delivery succeeded");
     return Response.json({ sent: true });
   } catch (error) {
+    const cause =
+      error instanceof Error
+        ? (error as Error & { cause?: { code?: unknown } }).cause
+        : undefined;
     console.error("[consultation] Telegram request failed", {
       errorName: error instanceof Error ? error.name : "UnknownError",
-      errorMessage: error instanceof Error ? error.message.slice(0, 200) : "Unknown error",
+      networkErrorCode:
+        typeof cause?.code === "string" ? cause.code.slice(0, 80) : undefined,
     });
     return Response.json(
       { error: "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам в Telegram." },
