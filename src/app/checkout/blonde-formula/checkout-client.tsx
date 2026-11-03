@@ -47,17 +47,28 @@ export default function BlondeFormulaCheckout({ priceLabel }: { priceLabel: stri
 
   function startTelegramLogin() {
     setMessage("");
+
+    // Mobile browsers handle OAuth popups inconsistently, so keep the
+    // Telegram round trip in the current tab on phones and tablets.
+    const isTouchDevice =
+      window.matchMedia("(pointer: coarse)").matches ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (isTouchDevice) {
+      window.location.assign(
+        new URL("/api/auth/telegram/start?popup=0", window.location.origin).toString(),
+      );
+      return;
+    }
+
     const popup = window.open(
       "/api/auth/telegram/start?popup=1",
       "blonde-formula-telegram-login",
       "popup=yes,width=520,height=680,resizable=yes,scrollbars=yes",
     );
     if (!popup) {
-      const fallbackForm = document.createElement("form");
-      fallbackForm.method = "GET";
-      fallbackForm.action = "/api/auth/telegram/start?popup=0";
-      document.body.append(fallbackForm);
-      fallbackForm.submit();
+      window.location.assign(
+        new URL("/api/auth/telegram/start?popup=0", window.location.origin).toString(),
+      );
     }
   }
 
