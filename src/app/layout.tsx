@@ -5,6 +5,7 @@ import "@fontsource-variable/playfair-display/wght.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://darisav.by"),
   title: {
     default: "Дария Савич — брови, ресницы и обучение",
     template: "%s | Дария Савич",
@@ -25,12 +26,21 @@ export const metadata: Metadata = {
       "Оформление бровей и ресниц, ламинирование и авторский курс Blonde Formula.",
     locale: "ru_BY",
     type: "website",
+    images: [
+      {
+        url: "/images/hero-daria-mobile.jpg",
+        width: 1122,
+        height: 1402,
+        alt: "Дария Савич — оформление бровей и обучение",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Дария Савич — брови, ресницы и обучение",
     description:
       "Оформление бровей и ресниц, ламинирование и авторский курс Blonde Formula.",
+    images: ["/images/hero-daria-mobile.jpg"],
   },
   robots: {
     index: true,
