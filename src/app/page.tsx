@@ -1523,6 +1523,13 @@ export default function Home() {
                   О курсе <FaArrowRight aria-hidden="true" />
                 </button>
               </div>
+              <p className="course-card-legal-links">
+                <a href="/payment-and-refunds">Оплата, отмена и возврат</a>
+                <span aria-hidden="true"> · </span>
+                <a href="/documents/public-contract.pdf" target="_blank" rel="noopener noreferrer">
+                  Публичный договор
+                </a>
+              </p>
             </div>
           </article>
           <article className="course-card course-card-base" data-reveal>
@@ -1574,6 +1581,14 @@ export default function Home() {
             </div>
           </article>
         </div>
+        <p className="course-catalog-payment-links">
+          Для онлайн-курса BLONDE FORMULA:{" "}
+          <a href="/payment-and-refunds">оплата, отмена и возврат</a>
+          <span aria-hidden="true"> · </span>
+          <a href="/documents/public-contract.pdf" target="_blank" rel="noopener noreferrer">
+            публичный договор
+          </a>
+        </p>
       </section>
 
       <section
@@ -2016,6 +2031,7 @@ export default function Home() {
             <p>ОАО «Паритетбанк» · БИК: POISBY2X</p>
           </div>
           <nav className="footer-legal" aria-label="Правовая информация">
+            <a href="/payment-and-refunds">Оплата, получение доступа и возврат</a>
             <a
               href="/documents/personal-data-agreement.pdf"
               target="_blank"
@@ -2588,16 +2604,25 @@ export default function Home() {
                 </a>
               </section>
               {activeCourse === "blonde" && (
-                <a
-                  className="button button-burgundy course-detail-book"
-                  href="/checkout/blonde-formula"
-                  onClick={() => {
-                    setActiveCourse(null);
-                  }}
-                >
-                  Забронировать место · 50 BYN{" "}
-                  <FaArrowRight aria-hidden="true" />
-                </a>
+                <div className="course-detail-booking">
+                  <a
+                    className="button button-burgundy course-detail-book"
+                    href="/checkout/blonde-formula"
+                    onClick={() => {
+                      setActiveCourse(null);
+                    }}
+                  >
+                    Забронировать место · 50 BYN{" "}
+                    <FaArrowRight aria-hidden="true" />
+                  </a>
+                  <p className="course-payment-links">
+                    <a href="/payment-and-refunds">Оплата, отмена и возврат</a>
+                    <span aria-hidden="true"> · </span>
+                    <a href="/documents/public-contract.pdf" target="_blank" rel="noopener noreferrer">
+                      Публичный договор
+                    </a>
+                  </p>
+                </div>
               )}
             </div>
           </section>

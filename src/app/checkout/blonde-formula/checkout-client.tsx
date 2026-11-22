@@ -153,6 +153,12 @@ export default function BlondeFormulaCheckout({ priceLabel }: { priceLabel: stri
           </button>
         )}
         {message && <p className="checkout-status" role="status">{message}</p>}
+        <p className="checkout-terms-link">
+          Перед оплатой ознакомьтесь с{" "}
+          <Link href="/payment-and-refunds">порядком получения доступа, отмены заказа и возврата</Link>
+          {" "}и{" "}
+          <a href="/documents/public-contract.pdf" target="_blank" rel="noopener noreferrer">публичным договором</a>.
+        </p>
         <p className="checkout-footnote">
           Данные карты вводятся только на защищённой странице WebPay.
         </p>

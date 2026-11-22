@@ -516,12 +516,12 @@ body.portfolio-lightbox-open { overflow: hidden; }
 .course-catalog-heading h2 { margin: 0; color: var(--burgundy); font-family: var(--font-display); font-size: clamp(42px, 6vw, 74px); font-weight: 400; line-height: .98; letter-spacing: -.04em; }
 .course-catalog-heading > p:last-child { max-width: 570px; margin: 20px 0 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
 .course-catalog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; width: min(100%, 1280px); margin: auto; }
-.course-card { display: grid; grid-template-columns: .83fr 1.17fr; min-height: 450px; overflow: hidden; color: var(--cashmere); background: var(--maroon); box-shadow: 0 24px 60px rgba(51,28,29,.14); }
+.course-card { display: grid; grid-template-columns: .83fr 1.17fr; min-height: 470px; overflow: hidden; color: var(--cashmere); background: var(--maroon); box-shadow: 0 24px 60px rgba(51,28,29,.14); }
 .course-card-image { position: relative; min-height: 100%; overflow: hidden; background: #4a3033; }
 .course-card-image::after { position: absolute; inset: 0; content: ""; background: linear-gradient(0deg, rgba(37,10,19,.3), transparent 60%); }
 .course-card-image img { object-position: center; transition: transform .8s cubic-bezier(.2,.75,.2,1); }
 .course-card:hover .course-card-image img { transform: scale(1.045); }
-.course-card-content { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(26px, 3vw, 42px); }
+.course-card-content { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(26px, 3vw, 42px); padding-bottom: 54px; }
 .course-card-content .eyebrow { margin-bottom: 17px; font-size: 12px; letter-spacing: .18em; }
 .course-card-content h3 { margin: 0; color: var(--cashmere); font-family: var(--font-display); font-size: clamp(38px, 4.5vw, 60px); font-weight: 400; line-height: .9; letter-spacing: -.035em; text-transform: uppercase; }
 .course-card-subtitle { margin: 18px 0 0; color: #e1b987; font-family: var(--font-display); font-size: clamp(18px, 1.7vw, 22px); line-height: 1.3; }
@@ -534,6 +534,14 @@ body.portfolio-lightbox-open { overflow: hidden; }
 .course-card-buy { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 15px; color: var(--maroon); border: 1px solid var(--gold); background: var(--gold); font-family: inherit; font-size: 12px; text-align: center; text-decoration: none; cursor: pointer; transition: background .2s ease; }
 .course-card-buy:hover { background: #d09a69; }
 .course-card-buy:focus-visible { outline: 2px solid var(--cashmere); outline-offset: 3px; }
+.course-catalog-payment-links { display: none; width: min(100%, 1280px); margin: 18px auto 0; color: var(--burgundy); font-size: 13px; line-height: 1.7; }
+.course-card-legal-links { position: absolute; right: clamp(26px, 3vw, 42px); bottom: 18px; left: clamp(26px, 3vw, 42px); margin: 0; color: var(--cashmere); font-size: 12px; line-height: 1.5; white-space: nowrap; }
+.course-card-legal-links a, .course-catalog-payment-links a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.course-card-legal-links a:focus-visible, .course-catalog-payment-links a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.course-payment-links { margin: 12px 0 0; font-size: 12px; line-height: 1.6; }
+.course-payment-links a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.course-payment-links a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.course-detail-booking .course-payment-links { color: var(--burgundy); }
 .course-card-open { display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 15px; color: var(--maroon); border: 1px solid var(--gold); background: var(--gold); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .2s ease; }
 .course-card-open:hover { background: #d09a69; }
 .course-fullscreen { position: fixed; z-index: 50; inset: 0; display: flex; justify-content: center; overflow: hidden; background: rgba(15,8,11,.94); animation: course-backdrop-in .3s ease both; }
@@ -680,6 +688,11 @@ body:has(.course-fullscreen) { overflow: hidden; }
   .about { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); padding-inline: 4vw; gap: 5vw; }
   .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-legal { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: start; gap: 14px 20px; }
+}
+
+@media (max-width: 1100px) {
+  .course-card-legal-links { display: none; }
+  .course-catalog-payment-links { display: block; }
 }
 
 @media (max-width: 768px) {
@@ -899,6 +912,8 @@ body:has(.course-fullscreen) { overflow: hidden; }
 
 .checkout-page { display: grid; align-content: center; justify-items: center; min-height: 100svh; padding: 36px 20px; color: var(--burgundy); background: var(--cashmere); }
 .checkout-back-link { justify-self: start; width: min(100%, 720px); margin: 0 auto 20px; color: var(--burgundy); font-size: 13px; text-decoration: none; }
+.checkout-back-button { padding: 0; border: 0; background: transparent; font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.checkout-back-button:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }
 .checkout-back-link:hover, .checkout-retry-link:hover { text-decoration: underline; }
 .checkout-panel { width: min(100%, 720px); padding: clamp(28px, 6vw, 58px); border: 1px solid #ded3c8; background: #fffdfa; box-shadow: 0 22px 60px rgba(43, 18, 25, .08); }
 .checkout-panel h1 { margin: 10px 0 12px; color: var(--burgundy); font-family: var(--font-display); font-size: clamp(38px, 8vw, 64px); font-weight: 400; line-height: .98; letter-spacing: -.035em; }
@@ -909,6 +924,19 @@ body:has(.course-fullscreen) { overflow: hidden; }
 .checkout-action:disabled { opacity: .65; cursor: wait; }
 .checkout-status { margin: 18px 0 0; color: #716460; font-size: 13px; line-height: 1.6; }
 .checkout-footnote { margin: 26px 0 0; color: #8e817a; font-size: 12px; line-height: 1.6; }
+.checkout-terms-link { margin: 20px 0 0; color: #716460; font-size: 13px; line-height: 1.7; }
+.checkout-terms-link a, .payment-terms-panel a { color: var(--burgundy); text-decoration: underline; text-underline-offset: 3px; }
+.checkout-terms-link a:focus-visible, .payment-terms-panel a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }
+.payment-terms-page { align-content: start; }
+.payment-terms-panel { line-height: 1.7; }
+.payment-terms-panel h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.1; }
+.payment-terms-panel section { margin-top: 32px; }
+.payment-terms-panel h2 { margin: 0 0 12px; font-family: var(--font-display); font-size: clamp(25px, 4vw, 32px); font-weight: 400; line-height: 1.2; }
+.payment-terms-panel p, .payment-terms-panel li { color: #524744; font-size: 15px; line-height: 1.75; }
+.payment-terms-panel p { margin: 12px 0 0; }
+.payment-terms-panel ol { padding-left: 23px; }
+.payment-terms-panel li + li { margin-top: 8px; }
+.payment-terms-contract { padding-top: 24px; border-top: 1px solid #ded3c8; }
 .checkout-result { max-width: 720px; }
 .checkout-refresh { margin-top: 12px; padding: 8px 0; color: var(--burgundy); border: 0; background: transparent; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .checkout-retry-link { display: inline-block; margin: 14px 0 0 18px; color: var(--burgundy); font-size: 13px; }
